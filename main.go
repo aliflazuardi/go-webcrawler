@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"strings"
@@ -23,10 +24,13 @@ type star struct {
 }
 
 func main() {
-	crawl()
+	month := flag.Int("month", 1, "Month to fetch birthdays for")
+	day := flag.Int("day", 1, "Day to fetch birthdays for")
+	flag.Parse()
+	crawl(*month, *day)
 }
 
-func crawl() {
+func crawl(month int, day int) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("imdb.com", "www.imdb.com"),
 	)
@@ -73,5 +77,6 @@ func crawl() {
 		fmt.Println(string(js))
 	})
 
-	c.Visit("https://www.imdb.com/search/name/?birth_monthday=12-20")
+	startUrl := fmt.Sprintf("https://www.imdb.com/search/name/?birth_monthday=%d-%d", month, day)
+	c.Visit(startUrl)
 }
