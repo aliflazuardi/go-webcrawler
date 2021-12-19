@@ -36,23 +36,15 @@ func crawl(month int, day int) {
 	)
 	infoCollector := c.Clone()
 
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting: ", r.URL.String())
-	})
-
-	infoCollector.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting Profile URL: ", r.URL.String())
+	c.OnHTML(".mode-detail", func(e *colly.HTMLElement) {
+		profileUrl := e.ChildAttr("div.lister-item-image > a", "href")
+		profileUrl = e.Request.AbsoluteURL(profileUrl)
+		infoCollector.Visit(profileUrl)
 	})
 
 	c.OnHTML("a.lister-page-next", func(e *colly.HTMLElement) {
 		nextPage := e.Request.AbsoluteURL(e.Attr("href"))
 		c.Visit(nextPage)
-	})
-
-	c.OnHTML(".mode-detail", func(e *colly.HTMLElement) {
-		profileUrl := e.ChildAttr("div.lister-item-image > a", "href")
-		profileUrl = e.Request.AbsoluteURL(profileUrl)
-		infoCollector.Visit(profileUrl)
 	})
 
 	infoCollector.OnHTML("#content-2-wide", func(e *colly.HTMLElement) {
@@ -61,6 +53,8 @@ func crawl(month int, day int) {
 		tmpProfile.Photo = e.ChildAttr("#name-poster", "src")
 		tmpProfile.JobTitle = e.ChildText("#name-job-categories > a > span.itemprop")
 		tmpProfile.BirthDate = e.ChildAttr("#name-born-info time", "datetime")
+
+		fmt.Println(tmpProfile)
 
 		tmpProfile.Bio = strings.TrimSpace(e.ChildText("#name-bio-text > div.name-trivia-bio-text > div.inline"))
 
@@ -75,6 +69,14 @@ func crawl(month int, day int) {
 			log.Fatal(err)
 		}
 		fmt.Println(string(js))
+	})
+
+	c.OnRequest(func(r *colly.Request) {
+		fmt.Println("Visiting: ", r.URL.String())
+	})
+
+	infoCollector.OnRequest(func(r *colly.Request) {
+		fmt.Println("Visiting Profile URL: ", r.URL.String())
 	})
 
 	startUrl := fmt.Sprintf("https://www.imdb.com/search/name/?birth_monthday=%d-%d", month, day)
