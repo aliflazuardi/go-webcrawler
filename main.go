@@ -25,12 +25,12 @@ type star struct {
 
 func main() {
 	month := flag.Int("month", 1, "Month to fetch birthdays for")
-	day := flag.Int("day", 1, "Day to fetch birthdays for")
+	day := flag.Int("date", 1, "Date to fetch birthdays for")
 	flag.Parse()
-	crawl(*month, *day)
+	crawl(*month, *date)
 }
 
-func crawl(month int, day int) {
+func crawl(month int, date int) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("imdb.com", "www.imdb.com"),
 	)
@@ -77,6 +77,6 @@ func crawl(month int, day int) {
 		fmt.Println("Visiting Profile URL: ", r.URL.String())
 	})
 
-	startUrl := fmt.Sprintf("https://www.imdb.com/search/name/?birth_monthday=%d-%d", month, day)
+	startUrl := fmt.Sprintf("https://www.imdb.com/search/name/?birth_monthday=%d-%d", month, date)
 	c.Visit(startUrl)
 }
