@@ -24,5 +24,16 @@ func crawl() {
 		fmt.Println("Visiting Profile URL: ", r.URL.String())
 	})
 
+	c.OnHTML("a.lister-page-next", func(e *colly.HTMLElement) {
+		nextPage := e.Request.AbsoluteURL(e.Attr("href"))
+		c.Visit(nextPage)
+	})
+
+	c.OnHTML(".mode-detail", func(e *colly.HTMLElement) {
+		profileUrl := e.ChildAttr("div.lister-item-image > a", "href")
+		profileUrl = e.Request.AbsoluteURL(profileUrl)
+		infoCollector.Visit(profileUrl)
+	})
+
 	c.Visit("https://www.imdb.com/search/name/?birth_monthday=12-20")
 }
