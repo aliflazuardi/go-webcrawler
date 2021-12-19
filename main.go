@@ -52,9 +52,7 @@ func crawl(month int, day int) {
 		tmpProfile.Name = e.ChildText("h1.header > span.itemprop")
 		tmpProfile.Photo = e.ChildAttr("#name-poster", "src")
 		tmpProfile.JobTitle = e.ChildText("#name-job-categories > a > span.itemprop")
-		tmpProfile.BirthDate = e.ChildAttr("#name-born-info time", "datetime")
-
-		fmt.Println(tmpProfile)
+		tmpProfile.BirthDate = e.ChildAttr("#name-born-info time", "datetime"
 
 		tmpProfile.Bio = strings.TrimSpace(e.ChildText("#name-bio-text > div.name-trivia-bio-text > div.inline"))
 
